@@ -1,0 +1,177 @@
+******************************************************************************
+* NOTES ON THE MODIFICATIONS IMPLEMENTED IN GADGET-2 FOR DEDM COUPLED MODELS *
+*		    Edoardo Carlesi, 2010-2012				     *
+*		       edoardo.carlesi@uam.es				     *
+******************************************************************************
+
+*General note*
+
+The inclusion of the effects of an interacting scalar field into the GADGET-2 code
+requires a substantial modification of the original source code.
+The present implementation consists of a series of new files written from scratch 
+(mainly contained in the libdedm/ subdirectory) and the modification of many of the
+original GADGET-2 files.
+The code requires a series of tables to be read in order for the code to run correctly,
+more informations regarding these can be found in the following paragraphs as well as 
+in the parameter file and the Makefile.
+
+
+*New files*
+
+There are two libraries which are necessary for Gadget to run coupled dark energy - dark matter
+models, they are libdedm.a and libscott.a. 
+The first one is found in the libdedm/ subdirectory, and contains the following files:
+
+[dedmvars.c]
+This file contains all the extra variables introduced by the coupling.
+In particular we store into structures:
+- variable mass
+- hubble constant
+- coupling parameter
+- gravitational constant
+- time derivative of the phi filed
+which are read from pre-calculated tables.
+Coupling constant beta and the new coupling parameter return for now
+a constant value, but they can easily be extended to return a variable one
+in the same way it is done for hubble and mass parameters.
+When using Scott's PhiDot, the time derivative of the scalar field will 
+be loaded using other routines and is therefore disabled in the libdedm/ files.
+There are in principle two routines for the PhiDot field in libdedm, one reading the
+actual PhiDot value and the other one reading the kinetic term of the quintessence
+density and then computing the value needed for the drag term from it. 
+I am not sure the units in both methods are the right ones, therefore this part is carried
+using Scott's libraries. I keep both methods, though, in case a solution for the units 
+problem is found.
+
+[mass.c]
+This file contains routines that, reading and interpolating from 
+mass structure, allow to modify all DM masses at every timestep, assuming 
+that the variation induced by the DEDM coupling is the same for all 
+DM particles.
+The input file must contain the factor by which the actual particles' masses
+have to be multiplied; this value is normalized to 1 at z=0. In the read_tables.c 
+files this property is enforced at reading time.
+
+[interpolate.c]
+This file contains the routines which have to be called in order to get
+an interpolated value for the variables stored in [dedmvars.c].
+It also contains some debugging methods used for testing.
+
+[read_tables.c]
+This file implements routines which are called at the beginning of the 
+run to read data from user-input files and store it into structures.
+When reading variable mass and hubble functions tables, it is imposed that
+the value of those factors is EXACTLY equal to 1 at z=0, since the code works
+assuming that normalization.
+
+[param/dedm_cosmo.param]
+The new parameter file contains the adresses to all the tables which are required
+by the interpolation routines; in particular:
+- hubble factor file URL
+- mass factor file URL
+as well as the files needed by Scott's routines:
+- history file URL
+- phi's conformal time derivative URL
+The value of the coupling needs also to be specified 
+
+[integrate.c]
+This file holds methods and routines to integrate cosmological factors due to the
+dedm interaction.
+The integration routine for now assumes a variable phi and a constant beta; the pre calculated
+table read from the interpolation routine returns a phidot over M_planck, a function returning
+the product of PhiDot(a)/M_p * Beta(a) has been included to allow the more general case of a 
+time dependent coupling when integrating the cosmological drag factor.
+Scott's routines are be used to read the scalar field tables and implement 
+them directly including the integration factor (H*a)^1 and the correct units used by Gadget.
+
+
+*Scott's files*
+
+The second library is found under libscott/ and contains the whole implementation of the 
+coupled dark energy dark matter models developed by Scott Wales.
+Though, in this version of the code we only make use of one function, the one that reads 
+and stores the phi dot scalar field value. This routine needs an "his.dat" file (contaning 
+the conformal time tau and the expansion factor a) as well as the conformal time derivative
+of the scalar field (notice that the equations require the physical time derivative of phi).
+These two factors are then combined and used in the integration routine in the libdedm/integrate.c file.
+
+
+*Old files*
+
+Some of the old GADGET-2 files had to be modified as well.
+Many comments and practical descriptions have also been included in the Makefile.
+Notice that when running DM only simulations TreePM modifications are not really needed, so 
+that an option -DDMONLY is also included to save time in this kind of implementation. 
+In fact, for DM only simulations we simply need to rescale the Newton constant G to the 
+new "coupled" value, since all particles will be affected by both the scalar field 
+and the gravitational interaction.
+
+[begrun.c]
+- The option DEDM_INFO enables or disables the printing in the stderr (and also in a file 
+called dedm_info.txt) of all the DEDM related informations at each step, like contributions to the PM and 
+Tree terms, value of the mass variation parameter, size of the friction term and so on.
+- The new value of the beta coupling is set. 
+This is needed to calculate the integrals for the drag factor we need beta(a)
+(or simply beta_0 in the case of a constant). The effective gravitational constant is set after
+the set_units() routine is called, using setG_tilde() so that the Geff is correctly initialized.
+- Then, interpolation tables are read into 
+structures using the [read_tables.c] method read_all_interpolation_tables()
+and some new internal variables, due to the coupling, are initialized (i.e. G_tilde). 
+- Also, togheter with the drift table (which is integrated and eventually interpolated
+when calculating the drift factors) the cosmological drift is also calculated
+and stored for convenience, calling the init_phidot_table() routine [dedm/integrate.c]
+
+[io.c]
+The file is now storing the modified mass in the header of the GADGET snapshots using
+the get_variable_mass_factor() function in the [libdedm/interpolate.h] file
+
+[run.c]
+Particles' masses are modified using [mass.c] routine modify_particles_mass(), 
+which is placed between the drift operation and the compute_accelerations() called
+just before the kick takes place. 
+Although every particle is allowed to have its own "timestep", the run() function uses
+the smallest possible in order to keep the system synchronized, so that it's correct
+to modify the masses just before the accelerations are computed.
+
+[pm_periodic.c]
+Modified the init_periodic() method in order to allocate more space due to the new interactions.
+The PM calculation is modified in the following way:
+- first, we take into account all the particles interacting through gravity in the usual way;
+- then, we calculate the density of DM particles (interacting through quintessence) on the grid using
+the usual CIC assignment; we calculate the force simply substituting G with G_tilde and add the components 
+of this new force to the ones due to gravity (simple vectorial sum).
+- While the dimension of the grid part assigned to every processor is calculated only once (since is the same
+both for G and G_tilde interactions), we have to double the variables which store the densities, 
+the densities transforms and the forces (workspace2, rhogrid2 and forcegrid2).
+
+[timestep.c]
+- Implemented the H(a) interpolation function replacing the analytical formula
+- When doing the kick, de-dm and gravitational forces are added
+
+[allvars.h]
+Many of the new variables stored have been inserted into new "union" types to avoid problems
+overwriting old stuff.
+- struct NODE now contains informations on the DM particles interacting through quintessence
+- struct P (particles) now contains a separate array where DEDM force components are stored
+- struct DomainNODE now holds informations about position and velocity of the c.o.m. of DM particles
+and total mass 
+- struct gravdata stores temporary informations about acceleration and position of dm nodes as well
+- BetaZero is also stored here: this is important since data are being read by Task=0 only, and the initial
+value of the coupling needs to be saved into the All structure since its content is then shared to all processors.
+Before this value was stored in the BetaTable.beta_0 structure directly, thus, only Task=0 stored the right
+value for the coupling.
+
+[forcetree.c]
+- force_update_node_recursive() now updates and stores informations about position and velocity of the
+center of mass of dark matter particles, and also their total mass
+- force_treeupdate_pseudos() updates the values of the multipole moments also considering dm particles
+- force_treeevaluate_shortrange() now adds an evaluation of the dedm force on the short range, considering
+an r^2 law as well for dm particles only (assumption to be checked)
+The criterion to open the nodes hasn't been changed, since the new interaction is smaller than gravity.
+
+[gravtree.c]
+- gravity_tree() stores the partial quintessence-mediated and gravitational interactions into the particle
+structure
+
+In most of the other source files the only modification regards the DEDM_HUBBLE option, i.e. the fact that the 
+computation has to take into account the modified expansion rate.
