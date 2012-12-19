@@ -1,0 +1,6 @@
+# Ignore objects, libraries and compiled source
+
+*.o
+*.a
+P-Gadget*
+*.tar

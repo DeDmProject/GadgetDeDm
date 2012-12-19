@@ -797,8 +797,6 @@ void read_file(char *fname, int readTask, int lastTask)
 		  if(All.ICFormat == 1 || All.ICFormat == 2)
 		    {
 		      SKIP2;
-			  printf("**SKIP2** Task=%d   blocknr=%d  blksize1=%d  blksize2=%d\n", ThisTask, blocknr,
-				 blksize1, blksize2);
 		      if(blksize1 != blksize2)
 			{
 			  printf("incorrect block-sizes detected!\n");
@@ -810,8 +808,7 @@ void read_file(char *fname, int readTask, int lastTask)
 				("Possible mismatch of 32bit and 64bit ID's in IC file and GADGET compilation !\n");
 			    }
 			  fflush(stdout);
-// TODO 
-			  //			  endrun(1889);
+			  endrun(1889);
 			}
 		    }
 		}
