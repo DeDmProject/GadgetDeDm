@@ -1,4 +1,4 @@
-#!/bin/bash
+#/bin/bash
 #PBS -W group_list=astronomy167
 #PBS -l nodes=64:ppn=8,mem=1280gb
 #PBS -l walltime=11:59:00
