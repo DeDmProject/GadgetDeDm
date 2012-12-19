@@ -1,6 +1,8 @@
 # Ignore objects, libraries and compiled source
 
+*.swp
 *.o
 *.a
 P-Gadget*
 *.tar
+*-usedvalues

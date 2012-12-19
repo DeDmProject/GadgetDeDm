@@ -67,12 +67,15 @@ void begrun(void)
   read_parameter_file(ParameterFile);	/* ... read in parameters for this run */
 
 #ifdef DEDM_INFO
-	char outDedm[100];
-	char *time = system("date");
-	sprintf(outDedm, "%s%s", All.OutputDir,"dedm_info.txt");
+	char *time, outDedm[100];
+
+	if(ThisTask == 0)
+		time=system("date");
+
+		sprintf(outDedm, "%s%s", All.OutputDir,"dedm_info.txt");
 		
-		// The file is being opened here in write mode, then closed and reopened in append mode
-	All.outDeDmFile = fopen(outDedm, "w");
+				// The file is being opened here in write mode, then closed and reopened in append mode
+			All.outDeDmFile = fopen(outDedm, "w");
 
 	if(All.outDeDmFile == NULL) {
 		  if(ThisTask == 0)
@@ -82,7 +85,8 @@ void begrun(void)
 			fprintf(stdout, "\nSaving dedm log info to%s\n", outDedm);
 	}
 
-	fprintf(All.outDeDmFile,"%s\n\n",time);
+		  if(ThisTask == 0)
+			fprintf(All.outDeDmFile,"%s\n\n",time);
 	fclose(All.outDeDmFile);
 
 	All.outDeDmFile = fopen(outDedm, "a");
