@@ -66,7 +66,7 @@ void printVectors(double vec1[], double vec2[], int dim)
 	int i=0;
 	for(i=0; i<dim; i++) 
 	{
-		fprintf(stderr, "%d %s %lf %s %lf \n", i, " vector1: ", vec1[i], " vector2: ", vec2[i]);
+		fprintf(stdout, "%d %s %lf %s %lf \n", i, " vector1: ", vec1[i], " vector2: ", vec2[i]);
 	}
 }
 
@@ -107,7 +107,7 @@ void read_interp_table(char * URL)
 		}
 
 		if(ThisTask==0) 
-			fprintf(stderr, " Found VDE hubble table h(a) file, allocating memory ... \n");
+			fprintf(stdout, " Found VDE hubble table h(a) file, allocating memory ... \n");
 
 		HubTable.npts   = npts;
 		HubTable.a      = (double *) calloc(npts, sizeof(double));

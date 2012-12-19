@@ -107,8 +107,8 @@ new "coupled" value, since all particles will be affected by both the scalar fie
 and the gravitational interaction.
 
 [begrun.c]
-- The option DEDM_INFO enables or disables the printing in the stderr (and also in a file 
-called dedm_info.txt) of all the DEDM related informations at each step, like contributions to the PM and 
+- The option DEDM_INFO enables or disables the dumping of informations on a dedm_info.txt file
+of all the DEDM related informations at each step, like contributions to the PM and 
 Tree terms, value of the mass variation parameter, size of the friction term and so on.
 - The new value of the beta coupling is set. 
 This is needed to calculate the integrals for the drag factor we need beta(a)

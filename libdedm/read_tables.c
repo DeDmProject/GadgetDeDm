@@ -36,7 +36,7 @@ int get_lines(FILE *f)
 void read_interp_table(char * URL) 
 {
 	if(ThisTask==0)
-		fprintf(stderr, "Reading from table %s\n", URL);
+		fprintf(stdout, "Reading from table %s\n", URL);
 
 	int k=0;
 	char dummyline[2048];
@@ -77,7 +77,7 @@ double hub_0, mass_0;
 		}
 #ifdef DEDM_INFO
 		if(ThisTask==0)
-			fprintf(stderr, "Task=%d, reading hub_0=%lf\n", ThisTask, hub_0);
+			fprintf(stdout, "Task=%d, reading hub_0=%lf\n", ThisTask, hub_0);
 
 		// All the tasks are being dumped to the out file for debugging pourposes
 		fprintf(All.outDeDmFile, "Task=%d, reading hub_0=%lf\n", ThisTask, hub_0);
@@ -102,7 +102,7 @@ double hub_0, mass_0;
 		}
 #ifdef DEDM_INFO
 		if(ThisTask==0)
-			fprintf(stderr, "Task=%d, reading mass_0=%lf\n", ThisTask, mass_0);
+			fprintf(stdout, "Task=%d, reading mass_0=%lf\n", ThisTask, mass_0);
 
 		fprintf(All.outDeDmFile, "Task=%d, reading mass_0=%lf\n", ThisTask, mass_0);
 #endif

@@ -18,7 +18,7 @@ Spline * CreateSpline(double * x,
 int i = 0;
     for (i=1;i<n;++i){
         if (x[i]<=x[i-1]){
-            fprintf(stderr,"Spline inversion %e\t%e (size %zu)\n",
+            fprintf(stdout,"Spline inversion %e\t%e (size %zu)\n",
                     x[i-1],x[i],n);
         }
     }
