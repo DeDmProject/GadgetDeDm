@@ -1,6 +1,6 @@
 include ../Makefile.config
 
-CFLAGS+=${OPT} ${CCFLAGS} ${DEFINEFLAGS}
+CFLAGS+=${OPT} ${CCFLAGS} ${DEFINEFLAGS} $(EXTRA_LIBS) $(EXTRA_INCL)
 
 MAKE?=make
 

@@ -1,7 +1,7 @@
 # Makefile for libvde.a , a GADGET-2 library used to enable simulations of Vector Dark Energy models
 include ../Makefile.config
 
-CFLAGS+=${OPT} ${CCFLAGS} ${DEFINEFLAGS}
+CFLAGS+=${OPT} ${CCFLAGS} ${DEFINEFLAGS} $(EXTRA_LIBS) $(EXTRA_INCL)
 
 MAKE?=make
 
