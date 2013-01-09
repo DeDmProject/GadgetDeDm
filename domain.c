@@ -32,7 +32,7 @@
 #ifndef	LARGE_SIMU
 #define TOPNODEFACTOR  40.0
 #else
-#define TOPNODEFACTOR  8.0
+#define TOPNODEFACTOR  6.0
 #endif
 
 #define REDUC_FAC      0.98
@@ -1028,7 +1028,11 @@ void domain_topsplit_local(int node, peanokey startkey)
       for(i = 0; i < 8; i++)
 	{
 	  sub = TopNodes[node].Daughter + i;
+#ifdef LARGE_SIMU
+	  if(TopNodes[sub].Count > All.TotNumPart / (TOPNODEFACTOR * NTask * 4))
+#else
 	  if(TopNodes[sub].Count > All.TotNumPart / (TOPNODEFACTOR * NTask * NTask))
+#endif
 	    domain_topsplit_local(sub, TopNodes[sub].StartKey);
 	}
     }

@@ -8,6 +8,10 @@
 #include "allvars.h"
 #include "proto.h"
 
+#ifdef DEDM_MASS
+#include "libdedm/interpolate.h"
+#endif
+
 
 /* This function reads initial conditions that are in the default file format
  * of Gadget, i.e. snapshot files can be used as input files.  However, when a
@@ -555,7 +559,20 @@ void read_file(char *fname, int readTask, int lastTask)
 	}
 
       for(i = 0; i < 6; i++)
-	All.MassTable[i] = header.mass[i];
+	{
+#ifdef DEDM_MASS
+	/* If the simulation in restarted the mass in the header file is the modified one
+	 * so we need to rescale it to the a=1.0 value which is the one we need.
+	 */ 
+	if( RestartFlag == 2 && i == 1 )
+	  All.MassTable[i] = header.mass[i] * (1./get_variable_mass_factor(header.time));
+	else
+	  All.MassTable[i] = header.mass[i];
+#else
+	  All.MassTable[i] = header.mass[i];
+#endif
+
+	}
 
       All.MaxPart = All.PartAllocFactor * (All.TotNumPart / NTask);	/* sets the maximum number of particles that may */
       All.MaxPartSph = All.PartAllocFactor * (All.TotN_gas / NTask);	/* sets the maximum number of particles that may 

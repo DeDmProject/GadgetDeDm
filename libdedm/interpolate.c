@@ -45,13 +45,18 @@ double critical_density(double a)
 double getH_a(double a)
 {
 	double H;
+	static int iter=0;
+
 	H = get_interpolated_value(HubTable.a, HubTable.hubble, HubTable.npts ,a);
 #ifdef DEDM_INFO
 	if(All.Time > 0.02)
 	{
-		if(ThisTask==0)	
+		if(ThisTask==0 && iter < 5)
+		{	
 			fprintf(stdout, "Task=%d, Time=%lf, Hubble=%lf\n", ThisTask, All.Time, H);
 		fprintf(All.outDeDmFile, "Task=%d, Time=%lf, Hubble=%lf\n", ThisTask, All.Time, H);
+	}
+	iter++;
 	}
 #endif
 	return H;
