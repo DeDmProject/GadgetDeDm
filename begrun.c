@@ -82,7 +82,7 @@ void begrun(void)
 			fprintf(stdout, "\nError. Unable to open file:%s to store dedm log info.\n", outDedm);
 	} else {
   		if(ThisTask == 0)
-			fprintf(stdout, "\nSaving dedm log info to%s\n", outDedm);
+			fprintf(stdout, "\nSaving dedm log info to %s\n", outDedm);
 	}
 
 		  if(ThisTask == 0)

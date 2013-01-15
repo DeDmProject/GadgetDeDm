@@ -1,6 +1,6 @@
 ******************************************************************************
 * NOTES ON THE MODIFICATIONS IMPLEMENTED IN GADGET-2 FOR DEDM COUPLED MODELS *
-*		    Edoardo Carlesi, 2010-2012				     *
+*		    Edoardo Carlesi, 2010-2013				     *
 *		       edoardo.carlesi@uam.es				     *
 ******************************************************************************
 
@@ -124,6 +124,12 @@ and stored for convenience, calling the init_phidot_table() routine [dedm/integr
 [io.c]
 The file is now storing the modified mass in the header of the GADGET snapshots using
 the get_variable_mass_factor() function in the [libdedm/interpolate.h] file
+
+[read_ic.c]
+When restarting a simulation from a snapshot, we need to handle with care the fact that the mass
+in the header file is NOT the z=0 mass (assumed by the modify_particles_mass() routine) but a modified one.
+Therefore, we check that in this case the header mass is rescaled to the z=0 value before the 
+mass factor is multiplied to it.
 
 [run.c]
 Particles' masses are modified using [mass.c] routine modify_particles_mass(), 

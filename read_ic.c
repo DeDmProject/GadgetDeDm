@@ -565,9 +565,17 @@ void read_file(char *fname, int readTask, int lastTask)
 	 * so we need to rescale it to the a=1.0 value which is the one we need.
 	 */ 
 	if( RestartFlag == 2 && i == 1 )
+	{
 	  All.MassTable[i] = header.mass[i] * (1./get_variable_mass_factor(header.time));
-	else
+
+		if(ThisTask == 0) 
+			fprintf(stdout, "\nRestartFlag==2; rescaling header.mass[%d]=%e to MassTable[%d]=%e\n",
+					i, header.mass[i], i, All.MassTable[i]);
+	} 
+		else 
+	{
 	  All.MassTable[i] = header.mass[i];
+	}
 #else
 	  All.MassTable[i] = header.mass[i];
 #endif
