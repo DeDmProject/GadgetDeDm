@@ -37,9 +37,9 @@
                                   */
 
 #ifndef LARGE_SIMU
-#define MAXTOPNODES    100000
+#define MAXTOPNODES    200000
 #else
-#define MAXTOPNODES    800000
+#define MAXTOPNODES    80000
 #endif
 
 typedef  long long  peanokey;

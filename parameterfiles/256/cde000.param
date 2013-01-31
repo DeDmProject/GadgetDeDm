@@ -1,6 +1,7 @@
 %  Relevant files
 
-InitCondFile	   ICs/ICsph_cde000_256_75_z60.dat
+%InitCondFile	   ICs/ICsph_cde000_256_75_z60.dat
+InitCondFile       256/cde000/snapshot_027
 
 OutputDir          256/cde000/
 
