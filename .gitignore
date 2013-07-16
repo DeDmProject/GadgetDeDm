@@ -1,5 +1,7 @@
 # Ignore objects, libraries and compiled source
 
+parameterfiles/
+scripts/
 *.swp
 *.o
 *.a

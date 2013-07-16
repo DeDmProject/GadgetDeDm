@@ -43,6 +43,9 @@ I am not sure the units in both methods are the right ones, therefore this part 
 using Scott's libraries. I keep both methods, though, in case a solution for the units 
 problem is found.
 
+There is also an additional routine called check_type_interaction() that checks whether
+a given particle is interacting through the 5th force.
+
 [mass.c]
 This file contains routines that, reading and interpolating from 
 mass structure, allow to modify all DM masses at every timestep, assuming 
